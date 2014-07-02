@@ -11,6 +11,8 @@ uint8_t clockPin = 2;
 
 Adafruit_WS2801 strip = Adafruit_WS2801(NPXLS, dataPin, clockPin);
 
+byte rgb[100];
+
 void setup() {
     SLIPSerial.begin(250000);   //this is the standard speed on the Yun
     Serial.begin(115200); // to  debug on usb port
@@ -19,22 +21,29 @@ void setup() {
 void loop(){
     int l;
     byte s;
-    byte rgb[100];
-
-    while(!SLIPSerial.endofPacket())
-        if( (l =SLIPSerial.available()) > 0)
-        {
-            for(int i = 0; i < l; i++){
-              s = SLIPSerial.read();
-              rgb[i] = s;
-              //Serial.println(s);
-            }
-        }
-    
-    for (int i = 0; i < 24; i++){
-      //Serial.println(rgb);
-      strip.setPixelColor(i, cRGB(rgb[i*3],rgb[i*3+1],rgb[i*3+2]));
+    if (SLIPSerial.available() > 0){
+      int i = 0;
+      while(!SLIPSerial.endofPacket()){
+        rgb[i] = SLIPSerial.read();
+        i++;
+      }
     }
+    
+    Serial.println("--------");
+    Serial.println(rgb[0]);
+    Serial.println(rgb[1]);
+    Serial.println(rgb[2]);
+    
+    int r = rgb[0];
+    int g = rgb[1];
+    int b = rgb[0];
+    
+    Serial.println(r);
+    Serial.println(g);
+    Serial.println(b);
+    Serial.println("--------");
+    
+    strip.setPixelColor(0, cRGB(r,g,b));
     
     strip.show();
 }
